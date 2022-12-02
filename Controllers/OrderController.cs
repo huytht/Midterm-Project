@@ -14,9 +14,23 @@ namespace Midterm_Project.Controllers
         }
         // GET: HomeController1
         // GET: OrderController
-        public ActionResult ShowAll()
+        public ActionResult ShowAll(int? scheduleId)
         {
-            var list = _context.Orders.Select(o => o).Include("FilmSchedule").Include("FilmSchedule.Film").Include("FilmSchedule.Cinema");
+            IEnumerable<Order> list;
+
+            if (scheduleId == null)
+            {
+                list = _context.Orders.Select(o => o).Include("FilmSchedule").Include("FilmSchedule.Film").Include("FilmSchedule.Cinema");
+            } else
+            {
+                list = _context.Orders.Where(o => o.FilmScheduleID == scheduleId).Include("FilmSchedule").Include("FilmSchedule.Film").Include("FilmSchedule.Cinema");
+            }
+            ViewBag.OrderList = list;
+            
+            ViewBag.FilmScheduleID = new[] { new SelectListItem { Text = "Vui lòng chọn lịch chiếu", Value = "-1" } }.Concat(
+                    _context.FilmSchedules.Select(f => new SelectListItem { Text = f.Film.Name + "-" + f.Cinema.Name + "-" + f.PremiereTime.ToString(), Value = f.ID.ToString() })
+                );
+            
             return View(list);
         }
 
