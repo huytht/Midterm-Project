@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.WebSockets;
 
 namespace Midterm_Project.Controllers
 {
@@ -33,10 +34,12 @@ namespace Midterm_Project.Controllers
         // POST: CinemaController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create([BindAttribute("Name", "AmountDefault")] Cinema cinema)
         {
             try
             {
+                _context.Cinemas.Add(cinema);
+                _context.SaveChanges();
                 return RedirectToAction(nameof(ShowAll));
             }
             catch
@@ -48,17 +51,33 @@ namespace Midterm_Project.Controllers
         // GET: CinemaController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var existCinema = _context.Cinemas.FirstOrDefault(c => c.ID == id);
+            if (existCinema != null)
+            {
+                return View(existCinema);
+            } else
+            {
+                return NotFound();
+            }
+            
         }
 
         // POST: CinemaController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, [BindAttribute("Name", "AmountDefault")] Cinema cinema)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var existCinema = _context.Cinemas.FirstOrDefault(c => c.ID == id);
+                if (existCinema != null)
+                {
+                    existCinema.Name = cinema.Name;
+                    existCinema.AmountDefault = cinema.AmountDefault;
+                    _context.SaveChanges();
+                }
+
+                return RedirectToAction(nameof(ShowAll));
             }
             catch
             {
