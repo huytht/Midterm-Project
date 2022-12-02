@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Midterm_Project.Controllers
 {
@@ -15,7 +16,7 @@ namespace Midterm_Project.Controllers
         // GET: OrderController
         public ActionResult ShowAll()
         {
-            var list = _context.Orders.Select(o => o);
+            var list = _context.Orders.Select(o => o).Include("FilmSchedule").Include("FilmSchedule.Film").Include("FilmSchedule.Cinema");
             return View(list);
         }
 
