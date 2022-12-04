@@ -43,10 +43,17 @@ namespace Midterm_Project.Controllers
         // GET: OrderController/Create
         public ActionResult Create()
         {
-            IEnumerable<SelectListItem> listSchedule = _context.FilmSchedules.Select(f => new SelectListItem { Text = f.Film.Name + "-" + f.Cinema.Name + "-" + f.PremiereTime.ToString(), Value = f.ID.ToString() });
-            ViewBag.FilmScheduleID = listSchedule;
-            
+            ViewBag.FilmScheduleID = new[] { new SelectListItem { Text = "Vui lòng chọn lịch chiếu", Value = "-1" } }.Concat(
+                    _context.FilmSchedules.Select(f => new SelectListItem { Text = f.Film.Name + "-" + f.Cinema.Name + "-" + f.PremiereTime.ToString(), Value = f.ID.ToString() }));
+
             return View();
+        }
+
+        [HttpPost]
+        public int CountTicketRemain(int scheduleId)
+        {
+            var amount = _context.FilmSchedules.FirstOrDefault(f => f.ID == scheduleId).AmountEmpty;
+            return amount;
         }
 
         // POST: OrderController/Create
