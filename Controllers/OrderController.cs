@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Midterm_Project.Controllers
 {
@@ -14,11 +15,25 @@ namespace Midterm_Project.Controllers
         }
         // GET: HomeController1
         // GET: OrderController
+        public IActionResult GetAllOrder(int? scheduleId)
+        {
+            IEnumerable<Order> list = null;
+            if (scheduleId == null || scheduleId == 0)
+            {
+                list = _context.Orders.Select(o => o).Include("FilmSchedule").Include("FilmSchedule.Film").Include("FilmSchedule.Cinema");
+            }
+            else
+            {
+                list = _context.Orders.Where(o => o.FilmScheduleID == scheduleId).Include("FilmSchedule").Include("FilmSchedule.Film").Include("FilmSchedule.Cinema");
+            }
+
+            return Json(list);
+        }
         public ActionResult ShowAll(int? scheduleId)
         {
             IEnumerable<Order> list;
 
-            if (scheduleId == null)
+            if (scheduleId == null || scheduleId == 0)
             {
                 list = _context.Orders.Select(o => o).Include("FilmSchedule").Include("FilmSchedule.Film").Include("FilmSchedule.Cinema");
             } else
@@ -27,7 +42,7 @@ namespace Midterm_Project.Controllers
             }
             ViewBag.OrderList = list;
             
-            ViewBag.FilmScheduleID = new[] { new SelectListItem { Text = "Vui lòng chọn lịch chiếu", Value = "-1" } }.Concat(
+            ViewBag.FilmScheduleID = new[] { new SelectListItem { Text = "Vui lòng chọn lịch chiếu", Value = "-1" }, new SelectListItem { Text = "Tất cả", Value = "0" } }.Concat(
                     _context.FilmSchedules.Select(f => new SelectListItem { Text = f.Film.Name + "-" + f.Cinema.Name + "-" + f.PremiereTime.ToString(), Value = f.ID.ToString() })
                 );
             
@@ -49,11 +64,14 @@ namespace Midterm_Project.Controllers
             return View();
         }
 
-        [HttpPost]
         public int CountTicketRemain(int scheduleId)
         {
             var amount = _context.FilmSchedules.FirstOrDefault(f => f.ID == scheduleId).AmountEmpty;
             return amount;
+        }
+        public bool CheckCorrectAmount(int ticketRemain, int amountTicket)
+        {
+            return amountTicket <= ticketRemain;
         }
 
         // POST: OrderController/Create
@@ -74,12 +92,15 @@ namespace Midterm_Project.Controllers
                     return RedirectToAction(nameof(ShowAll));
                 } else
                 {
+                    ViewBag.FilmScheduleID = new[] { new SelectListItem { Text = "Vui lòng chọn lịch chiếu", Value = "-1" } }.Concat(
+                    _context.FilmSchedules.Select(f => new SelectListItem { Text = f.Film.Name + "-" + f.Cinema.Name + "-" + f.PremiereTime.ToString(), Value = f.ID.ToString() }));
                     return View();
-                }
+                } 
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return Json(ex.Message);
             }
         }
 

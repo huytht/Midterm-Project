@@ -13,7 +13,7 @@
     <label class="control-label">Lọc</label>
     <select asp-action="Filter" name="myFilter" class="form-control" asp-items="ViewBag.FilmScheduleID"></select>
 </div>
-<table class="table">
+<table id="mytable" class="table">
     <thead>
         <tr>
             <th>
@@ -63,20 +63,44 @@
 </table>
 @section Scripts{
     <script>
-        function getCurrentURL () {
-            return window.location.href
-        }
-         $("select[name='myFilter']").change(function(){
-            var schedule_id = $(this).val();
-            var currentURL = getCurrentURL();
-            let nextURL = "";
-            if (currentURL.indexOf("scheduleId") > 0) {
-                var position = currentURL.indexOf("=");
-                nextURL = currentURL.substring(0, position + 1) + "" + schedule_id; 
-            } else {
-                nextURL = currentURL + "?scheduleId=" + schedule_id;
-            }
-            window.location.href = nextURL;
-        });
+        $(function () {
+            $("select[name='myFilter']").change(function(){
+                var schedule_id = $(this).val();
+                $("select[name='myFilter'] option[value='-1']").each(function () {
+                    $(this).remove();
+                });
+                $.ajax({
+                    url: '/Order/GetAllOrder',
+                    method: 'GET',
+                    data: {
+                        scheduleId: schedule_id,
+                    },
+                    success: function (res) {
+                        $('#mytable tbody').empty();
+                        let tbody = $("#mytable tbody");
+                        res.forEach(item => {
+                            let tr = $("<tr/>");
+                            let td1 = $("<td/>");
+                            console.log(item)
+                            td1.html(item.phoneNumber);
+                            tr.append(td1);
+                            let td2 = $("<td/>");
+                            td2.html(item.amountTicket);
+                            tr.append(td2)
+                            let td3 = $("<td/>");
+                            td3.html(item.filmSchedule.film.name);
+                            tr.append(td3)
+                            let td4 = $("<td/>");
+                            td4.html(item.filmSchedule.cinema.name);
+                            tr.append(td4)
+                            let td5 = $("<td/>");
+                            td5.html(item.filmSchedule.premiereTime);
+                            tr.append(td5)
+                            tbody.append(tr);
+                        });
+                    }
+                });
+            });
+        })
     </script>
 }

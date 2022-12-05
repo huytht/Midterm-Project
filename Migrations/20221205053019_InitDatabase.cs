@@ -45,7 +45,8 @@ namespace Midterm_Project.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FilmID = table.Column<int>(type: "int", nullable: false),
                     CinemaID = table.Column<int>(type: "int", nullable: false),
-                    AmountEmpty = table.Column<int>(type: "int", nullable: false)
+                    AmountEmpty = table.Column<int>(type: "int", nullable: false),
+                    PremiereTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

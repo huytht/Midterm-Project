@@ -11,14 +11,6 @@ public class DataContext : DbContext
     {
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer("Server=.;Database=ManageOrderTicket;MultipleActiveResultSets=True;Integrated Security=False;User ID=sa;Password=123456");
-        }
-    }
-
     #region DbSet
     public DbSet<Cinema> Cinemas { get; set; }
     public DbSet<Film> Films { get; set; }

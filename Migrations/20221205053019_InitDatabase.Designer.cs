@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Midterm_Project.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221202092047_UpdateSchemaFilmSchedule")]
-    partial class UpdateSchemaFilmSchedule
+    [Migration("20221205053019_InitDatabase")]
+    partial class InitDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

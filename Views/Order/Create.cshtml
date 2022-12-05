@@ -19,11 +19,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="FilmScheduleID" class="control-label"></label>
-                <select asp-for="FilmScheduleID" name="schedule_id" class ="form-control" asp-items="ViewBag.FilmScheduleID"></select>
+                <select asp-for="FilmScheduleID" name="FilmScheduleID" class="form-control" asp-items="ViewBag.FilmScheduleID"></select>
             </div>
             <div class="form-group">
                 <label asp-for="AmountTicket" class="control-label"></label>
-                <input asp-for="AmountTicket" name="amountTicket" class="form-control" /> <span id="ticket-remain"></span>
+                <input asp-for="AmountTicket" id="amountTicket" name="amountTicket" class="form-control" /> <span id="ticket-remain"></span>
                 <span asp-validation-for="AmountTicket" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -38,37 +38,40 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script>
-        //let amount = 0;
-        $("select[name='schedule_id']").change(function () {
+        $("select[name='FilmScheduleID']").change(function () {
             var schedule_id = $(this).val();
             $.ajax({
                 url: '/Order/CountTicketRemain',
-                method: 'POST',
+                method: 'GET',
                 data: {
                     scheduleId: schedule_id,
                 },
                 success: function (data) {
                     $('#ticket-remain').html("Còn " + data + " vé");
-                    //$('#hidden-val').val(data);
-                   //amount = data;
+                    //$("#my-form").validate({
+                    //    rules: {
+                    //        amountTicket: { 
+                    //            remote: {
+                    //                url: '/Order/CheckCorrectAmount',
+                    //                type: 'GET',
+                    //                data: {
+                    //                    ticketRemain: data,
+                    //                    amountTicket: $("#amountTicket").val()
+                    //                },
+                    //                success: function(res) {
+                    //                    console.log(res)
+                    //                }
+                    //            }
+                    //        }
+                    //    },
+                    //    messages: {
+                    //        amountTicket: { remote: "Vui lòng nhập số lượng ít hoặc bằng hơn lượng vé còn lại" }
+                    //    }
+                    //});
                 }
             });
-            //console.log(amount)
-            //$("#my-form").validate({
-            //    rules: {
-            //        amountTicket: { max: amount }
-            //    },
-            //    messages: {
-            //        amountTicket: { max: "Vui lòng nhập số lượng ít hoặc bằng hơn lượng vé còn lại" }
-            //    }
-            //});
         });
-        
-        
-       
         
         //ticket_remain = $('#hidden-val').val();
         //console.log(ticket_remain)
